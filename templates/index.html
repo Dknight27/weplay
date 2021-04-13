@@ -1,0 +1,99 @@
+<!--
+ * @Description: 
+ * @Autor: ShenHao
+ * @Date: 2021-04-10 19:55:22
+ * @LastEditors: ShenHao
+ * @LastEditTime: 2021-04-12 16:03:19
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WePlay</title>
+		<link rel="shortcut icon" type="image/x-icon" href="https://www.liuyonghong.com/ico.png">
+		<link rel="stylesheet" type="text/css" href="/static/css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/willesplay.css" />
+		<script src="/static/js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/static/js/md5.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/static/js/player.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body background="/static/images/bg.jpg" οncοntextmenu="return false" onselectstart="return false" οndragstart="return false">
+		<input id="file" type="file" webkitdirectory="" style="display: none;" multiple="multiple" />
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div id="willesPlay">
+						<div id="videoPause">
+							<svg id="logo" width="100" height="100" viewBox="0 0 64 64">
+								<defs>
+									<filter x="-11.2%" y="-10.8%" width="122.4%" height="125.5%" filterUnits="objectBoundingBox" id="pid-1-svgo-a">
+										<feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+										<feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+										<feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+										<feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" in="shadowBlurOuter1"></feColorMatrix>
+									</filter>
+									<path d="M52.352 13.5c4.837 0 8.707 4.32 8.647 9.72v21.06C61 49.62 57.128 54 52.29 54h-2.479c0 1.681-1.452 3-3.206 3S43.4 55.62 43.4 54H20.841c0 1.681-1.452 3-3.204 3-1.756 0-3.206-1.38-3.206-3h-2.722C6.87 54 3 49.68 3 44.28V23.22c0-5.4 3.87-9.72 8.709-9.72h11.25l-4.78-4.44c-.725-.661-.725-1.8 0-2.52.424-.36.908-.54 1.391-.54.546 0 1.029.18 1.392.54l7.5 6.96h7.318l7.5-6.96c.422-.36.907-.54 1.39-.54.544 0 1.029.18 1.392.54.725.659.725 1.8 0 2.52l-4.78 4.44h11.07zM26.527 45.54l17.418-10.08c1.45-.901 1.45-2.221 0-3.122L26.527 22.2c-1.452-.84-2.662-.12-2.662 1.56v20.22c0 1.74 1.21 2.4 2.662 1.561z"
+									 id="pid-1-svgo-b"></path>
+								</defs>
+								<g fill="none" fill-rule="evenodd">
+									<use fill="#000" filter="url(#pid-1-svgo-a)" xlink:href="#pid-1-svgo-b"></use>
+									<use fill-opacity=".7" fill="#FFF" xlink:href="#pid-1-svgo-b"></use>
+									<path d="M26.527 45.541c-1.452.84-2.662.18-2.662-1.56V23.76c0-1.68 1.21-2.4 2.662-1.56L43.945 32.34c1.45.9 1.45 2.22 0 3.121L26.527 45.541z"
+									 fill="#000" opacity=".06"></path>
+								</g>
+							</svg>
+						</div>
+						<div class="playHeader">
+							<div class="videoName">Xiao Hong 播放器</div>
+						</div>
+						<div class="playContent">
+							<video width="100%" height="100%" id="playVideo" src="">
+
+							</video>
+						</div>
+						<div class="playControll">
+							<div style="float: left;width:100px;">
+								<div class="playPause playIcon"></div>
+								<div class="pauseIcon"></div>
+								<svg class="change" viewBox="0 0 22 22">
+									<path fill="#a2a7aa" d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path>
+								</svg>
+							</div>
+							<div class="timebar">
+								<span class="currentTime">00:00:00</span>
+								<div class="progress" style="width:400px">
+									<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuemin="0"
+									 aria-valuemax="100" style="width:0%"></div>
+								</div>
+								<span class="duration">00:00:00</span>
+							</div>
+							<div class="otherControl">
+								<span id="voice" class="volume glyphicon glyphicon-volume-down"></span>
+								<span id="ct" class="fullScreen glyphicon glyphicon-fullscreen"></span>
+								<div id="volumeBar" class="volumeBar">
+									<div class="volumewrap">
+										<div class="progress">
+											<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 8px; height: 40%;"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="foot">
+			<div class="iconfont">
+				<div id="box" class="box" style="display: none;">
+					<div class="text"></div>
+					<svg class="table" style="display: none;" width="30px" height="30px" viewbox="0 2 64 64">
+						<path d="M26.527 45.541c-1.452.84-2.662.18-2.662-1.56V23.76c0-1.68 1.21-2.4 2.662-1.56L43.945 32.34c1.45.9 1.45 2.22 0 3.121L26.527 45.541z"
+						 fill="#00a1d6" opacity="0.5"></path>
+					</svg>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
