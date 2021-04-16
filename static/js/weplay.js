@@ -3,16 +3,15 @@
  * @Autor: ShenHao
  * @Date: 2021-04-12 09:17:36
  * @LastEditors: ShenHao
- * @LastEditTime: 2021-04-12 21:42:00
+ * @LastEditTime: 2021-04-13 11:51:27
  */
-
 $(document).ready(function($){
     'use strict';
     
     const icons="__ICONS__";
 
     let weplay={};
-
+    
     let id="weplay";
 
     /**
@@ -90,7 +89,7 @@ $(document).ready(function($){
      */
     let playerAdaptor={
         prepare(){
-            this._player=query('player');
+            this._player=get('player');
         },
         play(){
             this._player.play();
@@ -100,6 +99,7 @@ $(document).ready(function($){
         },
         seek(sec){
             this._player.currentTime=sec;
+            this._player.play();
         },
         isReady(){
             return true;
@@ -108,7 +108,7 @@ $(document).ready(function($){
             return this._player.currentTime;
         },
         toggleFullscreen(){
-            if(fullscreen()){
+            if(!fullscreen()){
                 this._player.requestFullscreen();
             }else{
                 document.exitFullscreen();
@@ -197,7 +197,7 @@ $(document).ready(function($){
             weplay.player.seek(time);
             weplay.remote.send(pack('SEEK', time));
         });
-
+        
         let restart=get("restart");
         on(restart, 'click', function() {
             //本地重新开始
@@ -210,12 +210,18 @@ $(document).ready(function($){
             //远程重新开始
             weplay.remote.send(pack('SEEK', 0));
         });
-        
+
         let fullscreen=get("fullscreen");
         on(fullscreen, 'click', function() {
             weplay.player.toggleFullscreen();
         });
-      
+        //选择视频文件
+        let select=get("select");
+        on(select,"change",function(){
+            let file=select.files[0];
+            player.src=URL.createObjectURL(file);
+        });
+
         weplay.ui = {
             // main,//不需要该属性
             local,
@@ -227,7 +233,8 @@ $(document).ready(function($){
             pause,
             sync,
             restart,
-            fullscreen
+            fullscreen,
+            select
         };
     }
     
@@ -255,6 +262,7 @@ $(document).ready(function($){
     }
 
     function connect(c){//用于处理连接时间
+        console.log("establishing");
         weplay.connection=c;
 
         let ui=weplay.ui;
@@ -338,8 +346,8 @@ $(document).ready(function($){
         });
     };
 
-    weplay.conncet=function(remote){
-        let c=weplay.peer.conncet(remote.value);
+    weplay.connect=function(remote){
+        let c=weplay.peer.connect(remote);
         c.on('open', function() {
             connect(c);
         });

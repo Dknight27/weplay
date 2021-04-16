@@ -1,0 +1,45 @@
+<!--
+ * @Description: 
+ * @Autor: ShenHao
+ * @Date: 2021-04-11 16:37:50
+ * @LastEditors: ShenHao
+ * @LastEditTime: 2021-04-16 14:35:26
+-->
+<html>
+    <head>
+        <script src="/static/js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/static/js/peerjs.min.js" type="text/javascript" charset="utf-8"></script>
+        <!-- <script src="tempPlayer.js" type="text/javascript" charset="utf-8"></script> -->
+        <script src="/static/js/weplay.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <div class="connectComponent">
+            <input type="text" id="local" placeholder="Peer Id" readonly/>
+            <input type="text" id="remote" placeholder="Remote Peer Id"/>
+            <button type="button" id="connect">连接</button>
+            <button type="button" id="disconnect" hidden>断开连接</button>
+        </div>
+        <div style="float: left;">
+            <video id="player" width="854" height="480">
+                <source src="/static/video/dog.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div style="float:left;margin-top: 3px;">
+            <textarea id="chatBox" style="resize: none; float:left" rows="20" cols="30" readonly>聊天记录聊天记录聊天记录聊天记录聊天记录聊天记录聊天记录</textarea>
+            <div>
+                <textarea id="chatBox" style=" resize: none;" rows="11" cols="30">聊天记录</textarea>
+            </div>
+        </div>
+        <div class="control" style="clear:both">
+            <button type="button" id="play">播放</button>
+            <button type="button" id="pause">暂停</button>
+            <button type="button" id="sync">同步</button>
+            <button type="button" id="restart">重新开始</button>
+            <button type="button" id="fullscreen">全屏</button>
+            <input type="file" id="select" accept=".mp4">
+        </div>
+    </body>
+</html>
