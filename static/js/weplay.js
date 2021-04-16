@@ -3,7 +3,7 @@
  * @Autor: ShenHao
  * @Date: 2021-04-12 09:17:36
  * @LastEditors: ShenHao
- * @LastEditTime: 2021-04-13 11:51:27
+ * @LastEditTime: 2021-04-16 21:24:21
  */
 $(document).ready(function($){
     'use strict';
@@ -179,6 +179,9 @@ $(document).ready(function($){
             weplay.disconnect();
         });
 
+        let name=get("name");
+        on(name,"click",()=>{});
+
         let play=get("play");
         on(play, 'click', function() {
             weplay.player.play();
@@ -222,12 +225,24 @@ $(document).ready(function($){
             player.src=URL.createObjectURL(file);
         });
 
+        let sendmsg=get("sendmsg");
+        on(sendmsg, 'click', function(){
+            let chatbox=get("chatbox");
+            let msgbox=get("msgbox");
+            let username=weplay.ui.name.value||weplay.ui.local.value;
+            let msg=username+": "+chatbox.value+"\n";
+            weplay.remote.send(pack("MSG",msg));
+            msgbox.value=msgbox.value+msg;
+            chatbox.value="";
+        });
+
         weplay.ui = {
             // main,//不需要该属性
             local,
             remote,
             connect,
             disconnect,
+            name,
             // toggle,//不需要展开/合并控制栏
             play,
             pause,
@@ -236,7 +251,30 @@ $(document).ready(function($){
             fullscreen,
             select
         };
+        //if (location.protocol === "https:")
+        if (true) {//没办法使用https传输
+            let call = get("call");
+            on(call, 'click', function() {
+                weplay.call(weplay.ui.remote.value);
+            });
+            weplay.ui.call = call;
+    
+            let hangUp = get("hangUp");
+            on(hangUp, 'click', function() {
+                weplay.hangUp();
+            });
+            weplay.ui.hangUp = hangUp;
+    
+            create('style', document.body, {
+            textContent: `
+                        #weplay.active {
+                            width: 46em !important;
+                        }`
+            });
+        }
     }
+
+
     
     weplay.remote = {
         send(...args) {
@@ -257,8 +295,38 @@ $(document).ready(function($){
             weplay.ui.local.value = id;
         });
         //收到远端的连接请求时用connect处理
-        peer.on('connection', connect);
+        peer.on("connection", connect);
+        peer.on("call",call);
+
         weplay.peer=peer;
+    }
+
+    function call(media) {
+        prepareMedia(media);
+        weplay.call(media);
+    }
+
+    function prepareMedia(media) {
+        weplay.media = media;
+        let ui = weplay.ui;
+        media.on('stream', stream => {
+            ui.remoteVideo.srcObject = stream;
+            ui.localVideo.hidden = false;
+            ui.remoteVideo.hidden = false;
+            ui.call.hidden = true;
+            ui.hangUp.hidden = false;
+        });
+        media.on('close', () => {
+            ui.localVideo.hidden = true;
+            ui.remoteVideo.hidden = true;
+            ui.call.hidden = false;
+            ui.hangUp.hidden = true;
+            weplay.media = null;
+            if (weplay.stream) {
+                weplay.stream.getTracks().forEach(track => track.stop());
+                weplay.stream = null;
+            }
+        });
     }
 
     function connect(c){//用于处理连接时间
@@ -270,7 +338,7 @@ $(document).ready(function($){
         ui.remote.disabled = true;
         ui.connect.hidden = true;
         ui.disconnect.hidden = false;
-        //不知道有啥用
+
         let start = 0;
         let elapsed = 0;//连接持续时间
         let round = 0;
@@ -313,6 +381,8 @@ $(document).ready(function($){
                     }
                     break;
                 case 'MSG'://可以用来聊天
+                    let msgbox=get("msgbox");
+                    msgbox.value=msgbox.value+p.data;
                     console.log('Remote: ' + p.data);
                     break;
                 case 'SEEK'://请求跳转到sec
@@ -357,6 +427,74 @@ $(document).ready(function($){
         let c = weplay.connection;
         if (c) {
           c.close();
+        }
+    };
+
+    function getUserMedia(...args) {
+        let method = getDefined(
+            navigator.getUserMedia,
+            navigator.webkitGetUserMedia,
+            navigator.mozGetUserMedia
+        );
+        if (!method) {
+          return null;
+        }
+    
+        return method.apply(navigator, args);
+    }
+
+    function initVideoCallPlayers() {
+        if (weplay.ui.localVideo) {
+            return;
+        }
+        let remoteVideo = create('video', document.body, {
+            id: 'weplay-remote-video',
+            autoplay: true
+        });
+        let localVideo = create('video', document.body, {
+            id: 'weplay-local-video',
+            autoplay: true,
+            muted: true
+        });
+        weplayDrag(remoteVideo);
+        weplayDrag(localVideo);
+        Object.assign(weplay.ui, { remoteVideo, localVideo });
+        on(document, 'fullscreenchange', function() {
+            if (remoteVideo.src) {
+                remoteVideo.play();
+            }
+            if (localVideo.src) {
+                localVideo.play();
+            }
+        });
+    }
+
+    weplay.call = function(remote) {
+        getUserMedia(
+            {
+                video: true,
+                audio: true
+            },
+            stream => {
+                weplay.stream = stream;
+                initVideoCallPlayers();
+                weplay.ui.localVideo.srcObject = stream;
+                if (typeof remote === 'string') {
+                    // peer id
+                    let media = weplay.peer.call(remote, stream);
+                    prepareMedia(media);
+                } else {
+                    // MediaConnection
+                    remote.answer(stream);
+                }
+            },
+            err => console.error
+        );
+    };
+
+    weplay.hangUp = function() {
+        if (weplay.media) {
+            weplay.media.close();
         }
     };
 

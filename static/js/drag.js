@@ -455,5 +455,5 @@
     };
 
     // Everything is ready, export the whole module
-    window.coplayDrag = drag;
+    window.weplayDrag = drag;
 })();

@@ -3,13 +3,14 @@
  * @Autor: ShenHao
  * @Date: 2021-04-11 16:37:50
  * @LastEditors: ShenHao
- * @LastEditTime: 2021-04-16 14:35:26
+ * @LastEditTime: 2021-04-16 21:16:10
 -->
 <html>
     <head>
         <script src="/static/js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="/static/js/peerjs.min.js" type="text/javascript" charset="utf-8"></script>
         <!-- <script src="tempPlayer.js" type="text/javascript" charset="utf-8"></script> -->
+        <script src="/static/js/drag.js" type="text/javascript" charset="utf-8"></script>
         <script src="/static/js/weplay.js" type="text/javascript" charset="utf-8"></script>
         <style>
 
@@ -21,6 +22,7 @@
             <input type="text" id="remote" placeholder="Remote Peer Id"/>
             <button type="button" id="connect">连接</button>
             <button type="button" id="disconnect" hidden>断开连接</button>
+            <input type="text" id="name" placeholder="name"/>
         </div>
         <div style="float: left;">
             <video id="player" width="854" height="480">
@@ -28,10 +30,11 @@
             </video>
         </div>
         <div style="float:left;margin-top: 3px;">
-            <textarea id="chatBox" style="resize: none; float:left" rows="20" cols="30" readonly>聊天记录聊天记录聊天记录聊天记录聊天记录聊天记录聊天记录</textarea>
+            <textarea id="msgbox" placeholder="消息记录" style="resize: none; float:left" rows="20" cols="30" readonly></textarea>
             <div>
-                <textarea id="chatBox" style=" resize: none;" rows="11" cols="30">聊天记录</textarea>
+                <textarea id="chatbox" placeholder="请输入消息..." style=" resize: none;" rows="10" cols="30"></textarea>
             </div>
+            <button type="button" id="sendmsg">发送</button>
         </div>
         <div class="control" style="clear:both">
             <button type="button" id="play">播放</button>
@@ -39,6 +42,8 @@
             <button type="button" id="sync">同步</button>
             <button type="button" id="restart">重新开始</button>
             <button type="button" id="fullscreen">全屏</button>
+            <button type="button" id="call">视频</button>
+            <button type="button" id="hangUp" hidden>停止视频</button>
             <input type="file" id="select" accept=".mp4">
         </div>
     </body>
