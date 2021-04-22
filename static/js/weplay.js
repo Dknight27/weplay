@@ -3,7 +3,7 @@
  * @Autor: ShenHao
  * @Date: 2021-04-12 09:17:36
  * @LastEditors: ShenHao
- * @LastEditTime: 2021-04-16 21:24:21
+ * @LastEditTime: 2021-04-19 13:45:45
  */
 $(document).ready(function($){
     'use strict';
@@ -11,6 +11,7 @@ $(document).ready(function($){
     const icons="__ICONS__";
 
     let weplay={};
+    weplay.connections={};
     
     let id="weplay";
 
@@ -231,7 +232,7 @@ $(document).ready(function($){
             let msgbox=get("msgbox");
             let username=weplay.ui.name.value||weplay.ui.local.value;
             let msg=username+": "+chatbox.value+"\n";
-            weplay.remote.send(pack("MSG",msg));
+            weplay.remote.broadcast(pack("MSG",msg));
             msgbox.value=msgbox.value+msg;
             chatbox.value="";
         });
@@ -282,6 +283,14 @@ $(document).ready(function($){
             if (c) {
                 c.send.apply(c, args);
             }
+        },
+        broadcast(...args){
+            let c = weplay.connections;
+            if(c){
+                for(id in c){
+                    c[id].send.apply(c[id],args);
+                }
+            }
         }
     };
 
@@ -329,15 +338,16 @@ $(document).ready(function($){
         });
     }
 
-    function connect(c){//用于处理连接时间
+    function connect(c){//用于处理连接事件
         console.log("establishing");
-        weplay.connection=c;
+        // console.log(c);
+        weplay.connections[c.peer]=c;
 
         let ui=weplay.ui;
         ui.remote.value = c.peer;
-        ui.remote.disabled = true;
+        // ui.remote.disabled = true;
         ui.connect.hidden = true;
-        ui.disconnect.hidden = false;
+        // ui.disconnect.hidden = false;
 
         let start = 0;
         let elapsed = 0;//连接持续时间
@@ -424,9 +434,11 @@ $(document).ready(function($){
     };
 
     weplay.disconnect = function() {
-        let c = weplay.connection;
+        let c = weplay.connections;
         if (c) {
-          c.close();
+          for(id in c){
+              c[id].close();
+          }
         }
     };
 
@@ -496,6 +508,10 @@ $(document).ready(function($){
         if (weplay.media) {
             weplay.media.close();
         }
+    };
+
+    weplay.broadcast=function(){
+        
     };
 
     window.weplay=weplay;
