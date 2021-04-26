@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Room - {{ room.rid }}{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="/static/js/peerjs.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/static/js/drag.js"></script>
+<script type="text/javascript" src="/static/js/weplay.js"></script>
+<script>
+    $(document).ready(function($){
+        let id={{current_user.id}};
+        window.weplay.init(id);
+        $.ajax({
+            method:'GET',
+            url:'/api/rooms/{{room.rid}}'
+        }).done(function(msg){
+            let users=msg.users;
+            users.forEach(function(user){
+                if(user.id!=id){
+                    weplay.connect(user.id.toString());
+                    if(!weplay.connections[user.id.toString()]){
+                        setTimeout(function(){
+                            weplay.connect(user.id.toString());
+                        },2000);
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <div class="profile-header">
+        <table id="usertable">
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.id}}</td>
+                <td>{{user.username}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+    <div class="connectComponent">
+            <input type="text" id="local" placeholder="Peer Id" readonly/>
+            <input type="text" id="remote" placeholder="Remote Peer Id"/>
+            <button class="btn btn-default" type="button" id="connect">连接</button>
+            <button class="btn btn-default" type="button" id="disconnect" hidden>断开连接</button>
+            <input type="text" id="name" placeholder="name"/>
+        </div>
+        <div style="float: left;">
+            <video id="player" width="854" height="480" controls>
+<!--                <source src="/static/video/dog.mp4" type="video/mp4">-->
+            </video>
+        </div>
+        <div class="chat-container" style="float:left;margin-top: 3px;">
+<!--            <textarea id="msgbox" placeholder="消息记录" style="resize: none; float:left" rows="20" cols="30" readonly></textarea>-->
+            <div id="msgbox" style="height:410px;border:1px solid #000;overflow:auto">
+                <p>消息记录</p>
+            </div>
+            <div>
+                <textarea id="chatbox" placeholder="请输入消息..." style=" resize: none;" rows="3" cols="30"></textarea>
+            </div>
+            <button class="btn btn-default" type="button" id="sendmsg">发送</button>
+        </div>
+        <div class="control" style="clear:both">
+            <button class="btn btn-default" type="button" id="play">播放</button>
+            <button class="btn btn-default" type="button" id="pause">暂停</button>
+            <button class="btn btn-default" type="button" id="sync">同步</button>
+            <button class="btn btn-default" type="button" id="restart">重新开始</button>
+            <button class="btn btn-default" type="button" id="fullscreen">全屏</button>
+            <button class="btn btn-default" type="button" id="call">视频</button>
+            <button class="btn btn-default" type="button" id="hangUp" hidden>停止视频</button>
+            <div>
+                <label for="select">选择视频播放</label>
+                <input type="file" id="select" accept=".mp4">
+            </div>
+            <div>
+                <label for="sendfile">发送文件</label>
+                <input type="file" id="sendfile">
+            </div>
+        </div>
+</div>
+{% endblock %}
