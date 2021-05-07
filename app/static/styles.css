@@ -5,5 +5,34 @@
     min-height: 260px;
     margin-left: 280px;
 }
+.right-component {
+    height:480px;
+    width:250px;
+}
+.tab-pane {
+    height: 90%;
+    display:none;
+}
+.nav-tabs {
+    height:10%;
+    color:#979899;
+    background-color:#E5E9EC;
+}
+.tab {
+    height:100%;
+    width:50%;
+    float:left;
+    text-align:center;
+    line-height:50px;
+    vertical-align:middle;
 
+}
+.active{
+    display:block;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+    cursor: default;
+}
 

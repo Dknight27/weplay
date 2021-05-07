@@ -259,6 +259,9 @@ $(document).ready(function($){
              msgbox.appendChild(pp);
         });
 
+        let chatbox=get("chatbox");
+
+
         weplay.ui = {
             // main,//不需要该属性
             local,
@@ -353,29 +356,28 @@ $(document).ready(function($){
             if(!get(videoId)){
                 let video=createVideoPlayer('video'+media.peer, stream);
             }
-//            ui.localVideo.hidden = false;
-//            ui.remoteVideo.srcObject = stream;
-//            ui.remoteVideo.hidden = false;
-//            ui.call.hidden = true;
-//            ui.hangUp.hidden = false;
+            else{
+                let video=get(videoId);
+                video.srcObject=stream;
+            }
         });
         media.on('close', () => {
-//            ui.localVideo.hidden = true;
-//            ui.remoteVideo.hidden = true;
-//            ui.call.hidden = false;
-//            ui.hangUp.hidden = true;
             console.log("close");
             let videos=weplay.videos;
             let videoName;
             for(videoName in videos){
                 videos[videoName].remove();
             }
+            weplay.videos = {};
             weplay.media = null;
-            weplay.medias={};
+            weplay.medias = {};
             if (weplay.stream) {
                 weplay.stream.getTracks().forEach(track => track.stop());
                 weplay.stream = null;
             }
+        });
+        media.on("error",(err)=>{
+            console.log("err:",err);
         });
     }
 
@@ -544,52 +546,57 @@ $(document).ready(function($){
     }
 
     function initLocalVideoPlayer(){
-        if (weplay.ui.localVideo) {
+        if (weplay.videos.hasOwnProperty("local")) {
             return;
         }
-        let localVideo = create('video', document.body, {
+        let videoContainer=get("video-container");
+        let localVideo = create('video', videoContainer, {
             id: 'weplay-local-video',
             autoplay: true,
             muted: true
         });
+        localVideo.width=100;
         weplayDrag(localVideo);
         weplay.videos['local']=localVideo;
     }
 
     function createVideoPlayer(id,srcObject){
-        let video=create('video', document.body, {
+        let videoContainer=get("video-container");
+        let video=create('video', videoContainer, {
             id: id,
             srcObject:srcObject,
             autoplay: true
         });
         weplayDrag(video);
+        video.width=100;
         weplay.videos[id]=video;
         return video;
     }
 
     weplay.call = function(remote) {//media：MediaConnection object or remote-id
-        getUserMedia(
-            {
-                video: true,
-                audio: true
-            },
-            stream => {
-                weplay.stream = stream;
-//                initVideoCallPlayers();
-//                weplay.ui.localVideo.srcObject = stream;
-                initLocalVideoPlayer();
-                weplay.videos['local'].srcObject=stream;
-                if (typeof remote === 'string') {
+        if(typeof remote !== 'string'){
+            //不是主动发起的视频，那么只接收对方视频流而不返回
+            remote.answer(null);
+        }else{
+            getUserMedia(
+                {
+                    video: true,
+                    audio: true
+                },
+                stream => {
+                    weplay.stream = stream;
+//                    initVideoCallPlayers();
+//                    weplay.ui.localVideo.srcObject = stream;
                     // peer id
+                    //如果是主动发起视频，那么显示本地视频流
+                    initLocalVideoPlayer();
+                    weplay.videos['local'].srcObject=stream;
                     let media = weplay.peer.call(remote, stream);
                     prepareMedia(media);
-                } else {
-                    // MediaConnection
-                    remote.answer(stream);
-                }
-            },
-            err => console.error
-        );
+                },
+                err => console.error
+            );
+        }
     };
 
     weplay.hangUp = function() {
@@ -598,6 +605,7 @@ $(document).ready(function($){
             let mediaName;
             for(mediaName in medias){
                 medias[mediaName].close();
+                console.log(mediaName,"was closed");
             }
         }
     };

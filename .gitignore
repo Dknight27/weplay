@@ -40,3 +40,9 @@ nosetests.xml
 
 # Virtual environment
 venv
+
+#Pycharm config
+.idea
+
+#vscode config
+.vscode
