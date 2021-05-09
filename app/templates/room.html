@@ -17,6 +17,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <!-- 引入elmentUI组件库 -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="//cdn.jsdelivr.net/npm/xgplayer@2.9.6/browser/index.js" type="text/javascript"></script>
 <script>
     $(document).ready(function($){
         let id={{current_user.id}};
@@ -48,21 +49,56 @@
         delimiters:["[[","]]"]
     });
 </script>
+<script>
+<!--    let player = new Player({-->
+<!--        id: 'player',-->
+<!--        url: '/static/video/dog.mp4',-->
+<!--        width:854,-->
+<!--        height:480,-->
+<!--        fitVideoSize: 'auto',-->
+<!--        videoInit: true,-->
+<!--        danmu: {-->
+<!--            comments: [  //弹幕数组-->
+<!--                {-->
+<!--                    duration: 15000, //弹幕持续显示时间,毫秒(最低为5000毫秒)-->
+<!--                    id: '1', //弹幕id，需唯一-->
+<!--                    start: 3000, //弹幕出现时间，毫秒-->
+<!--                    prior: true, //该条弹幕优先显示，默认false-->
+<!--                    color: true, //该条弹幕为彩色弹幕，默认false-->
+<!--                    txt: '长弹幕长弹幕长弹幕长弹幕长弹幕长弹幕长弹幕长弹幕长弹幕长弹幕', //弹幕文字内容-->
+<!--                    style: {  //弹幕自定义样式-->
+<!--                    color: '#ff9500',-->
+<!--                    fontSize: '20px',-->
+<!--                    border: 'solid 1px #ff9500',-->
+<!--                    borderRadius: '50px',-->
+<!--                    padding: '5px 11px',-->
+<!--                    backgroundColor: 'rgba(255, 255, 255, 0.1)'-->
+<!--                },-->
+<!--                mode: 'top' //显示模式，top顶部居中，bottom底部居中，scroll滚动，默认为scroll-->
+<!--                // el: DOM //直接传入一个自定义的DOM元素作为弹幕，使用该项的话会忽略所提供的txt和style-->
+<!--                // eventListeners: [{ //支持自定义DOM设置DOM监听事件-->
+<!--                //   event: 'click',-->
+<!--                //   listener: function (e) {-->
+<!--                //     console.log('click')-->
+<!--                //   },-->
+<!--                //   useCapture: false,-->
+<!--                // }]-->
+<!--                }-->
+<!--            ],-->
+<!--            area: {  //弹幕显示区域-->
+<!--                start: 0, //区域顶部到播放器顶部所占播放器高度的比例-->
+<!--                end: 1 //区域底部到播放器顶部所占播放器高度的比例-->
+<!--            },-->
+<!--            closeDefaultBtn: true, //开启此项后不使用默认提供的弹幕开关，默认使用西瓜播放器提供的开关-->
+<!--        }-->
+<!--    });-->
+</script>
 {% endblock %}
 
 {% block page_content %}
 <div class="page-content">
 <!--    <div class="profile-header">-->
-<!--        <table id="usertable">-->
-<!--            <tbody>-->
-<!--            {% for user in users %}-->
-<!--            <tr>-->
-<!--                <td>{{user.id}}</td>-->
-<!--                <td>{{user.username}}</td>-->
-<!--            </tr>-->
-<!--            {% endfor %}-->
-<!--            </tbody>-->
-<!--        </table>-->
+
 <!--    </div>-->
     <div>
         {{ wtf.quick_form(form) }}
@@ -74,10 +110,11 @@
             <button class="btn btn-default" type="button" id="disconnect" hidden>断开连接</button>
             <input type="text" id="name" placeholder="name"/>
     </div>
-    <div style="float: left;">
+    <div id="player-container" style="float: left;">
         <video id="player" width="854" height="480" controls>
             <source src="/static/video/dog.mp4" type="video/mp4">
         </video>
+<!--        <div id="player"></div>-->
     </div>
     <div class="right-component" style="float: left;">
         <div class="nav-tabs">
@@ -89,7 +126,7 @@
             </div>
         </div>
         <div class="tab-pane active" id="chat">
-            <div id="video-container" style="height:40%;border:1px solid #ddd;overflow:auto">
+            <div id="video-container" style="height:40%;border:1px solid #ddd;">
             </div>
             <div id="msgbox" style="height:40%;border:1px solid #ddd;overflow:auto">
                 <p>消息记录</p>

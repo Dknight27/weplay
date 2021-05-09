@@ -11,10 +11,10 @@ from ..decorators import admin_required
 def index():
     form=RoomForm()
     if form.validate_on_submit():
-        if not current_user.is_authenticated:
+        if not current_user.is_authenticated:#当前用户未登录
             flash("请先登录")
             return redirect(url_for('.index'))
-        if current_user.room_id :
+        if current_user.room_id :#已加入其他房间
             if current_user.room_id != int(form.rid.data):
                 print(current_user.room_id, form.rid.data)
                 flash("请先退出当前房间")
@@ -28,7 +28,7 @@ def index():
                 db.session.add(user)
                 db.session.commit()
                 return redirect(url_for('.room', room_id=form.rid.data))
-            else:
+            else:#房间不存在
                 room=Room(rid=form.rid.data, owner_id=current_user.id, owner_name=current_user.username)
                 owner=User.query.filter(User.id==current_user.id).first()
                 owner.room_id=room.rid
@@ -99,7 +99,7 @@ def room(room_id):
         u = User.query.filter(User.id == current_user.id).first()
         r = Room.query.filter(Room.rid == current_user.room_id).first()
         u.room_id = None
-        if not r.users:
+        if not r.users:#如果房间内没有用户那么删除房间
             db.session.delete(r);
         db.session.add(u)
         db.session.commit()

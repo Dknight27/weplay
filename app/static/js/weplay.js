@@ -48,8 +48,8 @@ $(document).ready(function($){
             function(e) {
                 listener.call(elem, e);
                 if (!noStop) {
-                e.preventDefault();
-                e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
                 return !!noStop;
             },
@@ -85,6 +85,37 @@ $(document).ready(function($){
         }
         return p;
     }
+    //生成高亮动画
+    function highlight(parentElem,x,y){
+        let body=document.body;
+        let rect = parentElem.getBoundingClientRect();
+        x=rect.left+x+window.scrollX;
+        y=rect.top+y+window.scrollY;
+        let increase=0;
+        let anim;
+        let elem = document.createElement("b");
+        elem.style.color = "#E94F06";
+        elem.style.zIndex = 9999;
+        elem.style.position = "absolute";
+        elem.style.select = "none";
+        elem.style.left = (x - 10) + "px";
+        elem.style.top = (y - 20) + "px";
+        elem.innerText="❤";
+        elem.style.fontSize = Math.random() * 10 + 8 + "px";
+        clearInterval(anim);
+        setTimeout(function() {
+            anim = setInterval(function() {
+                if (++increase == 150) {
+                    clearInterval(anim);
+                   body.removeChild(elem);
+                }
+                elem.style.top = y - 20 - increase + "px";
+                elem.style.opacity = (150 - increase) / 120;
+            }, 8);
+        }, 70);
+        body.appendChild(elem);
+    }
+
     /**
      * 适配播放器
      */
@@ -260,6 +291,27 @@ $(document).ready(function($){
         });
 
         let chatbox=get("chatbox");
+        on(chatbox,"keydown",function(e){
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if (code == 13) { //Enter keycode
+                sendmsg.click();
+                e.preventDefault();
+            }
+        },true);
+
+        let pc=get("player-container");
+        on(pc,"click",function(e){
+            if(e.ctrlKey){
+                var rect = e.target.getBoundingClientRect();
+                var x = e.clientX - rect.left; //x position within the element.
+                var y = e.clientY - rect.top;  //y position within the element.
+                console.log(e.clientX,e.clientY);
+                weplay.remote.broadcast(pack("HIGHLIGHT",{"x":x,"y":y}));
+                let player=get("player");
+                highlight(player,x,y);
+                e.preventDefault();
+            }
+        },true);
 
 
         weplay.ui = {
@@ -454,6 +506,10 @@ $(document).ready(function($){
                     pp.innerText=username+": ";
                     pp.appendChild(a);
                     msgbox.appendChild(pp);
+                    break;
+                case 'HIGHLIGHT':
+                    let player=get("player");
+                    highlight(player,p.data.x,p.data.y);
                     break;
                 case 'SEEK'://请求跳转到sec
                     player.seek(parseInt(p.data, 10));
